@@ -2,19 +2,18 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Sürükle Bırak 101 Okey</title>
+    <title>101 Okey - Gelişmiş Kurallar</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #1b4d29; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; user-select: none; }
         
         .masa-container { display: grid; grid-template-columns: 150px 1fr 150px; grid-template-rows: 100px 1fr auto; gap: 20px; width: 98vw; max-width: 1400px; height: 95vh; }
         
-        /* BOT KONUMLARI */
+        /* BOT VE MASA ALANLARI */
         .oyuncu-kart { background: rgba(0,0,0,0.6); padding: 10px; border-radius: 10px; text-align: center; border: 2px solid #27ae60; display: flex; flex-direction: column; justify-content: center; }
         #bot2-alan { grid-column: 2; grid-row: 1; flex-direction: row; align-items: center; gap: 20px; }
         #bot1-alan { grid-column: 1; grid-row: 2; }
         #bot3-alan { grid-column: 3; grid-row: 2; }
 
-        /* ORTA MASA */
         .orta-masa { grid-column: 2; grid-row: 2; background: #0e3519; border-radius: 80px; padding: 20px; display: flex; flex-direction: column; box-shadow: inset 0 0 50px rgba(0,0,0,0.8); border: 15px solid #2ecc71; }
         .cekme-ve-cop { display: flex; justify-content: center; gap: 40px; margin-bottom: 20px; }
         
@@ -22,31 +21,42 @@
         .cop { width: 50px; height: 75px; background: rgba(0,0,0,0.4); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; color: white; border: 2px dashed #f1c40f; transition: 0.2s; text-align: center; }
         .cop.drag-over { background: #e74c3c; border-color: white; transform: scale(1.1); }
 
-        .yere-acilanlar { flex-grow: 1; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; border: 2px dashed #f1c40f; }
+        .yere-acilanlar { flex-grow: 1; background: rgba(0,0,0,0.3); border-radius: 20px; padding: 15px; display: flex; flex-wrap: wrap; gap: 15px; border: 2px dashed #f1c40f; overflow-y: auto; }
+        .per-grubu { display: flex; gap: 2px; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 8px; }
 
-        /* YENİ: ISTAKA VE SLOT SİSTEMİ */
-        #benim-alan { grid-column: 2; grid-row: 3; display: flex; flex-direction: column; align-items: center; }
-        .istaka-izgara { background: #5c2e0b; padding: 15px; border-radius: 15px; display: grid; grid-template-columns: repeat(17, 45px); grid-template-rows: 65px 65px; gap: 5px; box-shadow: inset 0 20px 20px rgba(0,0,0,0.7), 0 10px 20px rgba(0,0,0,0.5); border-bottom: 8px solid #3e1e06; }
-        
+        /* ISTAKA VE BUTONLAR */
+        #benim-alan { grid-column: 2; grid-row: 3; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .istaka-izgara { background: #5c2e0b; padding: 15px; border-radius: 15px; display: grid; grid-template-columns: repeat(17, 45px); grid-template-rows: 65px 65px; gap: 5px; box-shadow: inset 0 20px 20px rgba(0,0,0,0.7); border-bottom: 8px solid #3e1e06; }
         .slot { background: rgba(0,0,0,0.2); border-radius: 6px; width: 100%; height: 100%; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; }
         .slot.drag-over { background: rgba(255,255,255,0.2); }
 
-        /* TAŞ TASARIMI */
-        .tas { width: 45px; height: 65px; background: #fffcf0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; box-shadow: 2px 2px 5px rgba(0,0,0,0.4); cursor: grab; border: 1px solid #dcdde1; }
+        /* TAŞ TASARIMI VE SEÇİM EFEKTİ */
+        .tas { width: 45px; height: 65px; background: #fffcf0; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; box-shadow: 2px 2px 5px rgba(0,0,0,0.4); cursor: grab; border: 1px solid #dcdde1; transition: transform 0.1s, border 0.1s; }
         .tas:active { cursor: grabbing; }
+        
+        /* Tıklanıp seçilen taşlar havaya kalkar */
+        .tas.secili { transform: translateY(-15px); border: 3px solid #f1c40f; box-shadow: 0 0 15px #f1c40f; }
         
         .sari { color: #f39c12; } .mavi { color: #2980b9; } .siyah { color: #2c3e50; } .kirmizi { color: #c0392b; }
 
+        /* KONTROLLER */
+        .buton-grubu { display: flex; gap: 10px; }
+        button { padding: 10px 15px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; border-radius: 5px; color: white; transition: 0.2s; }
+        .btn-mavi { background: #3498db; } .btn-mavi:hover { background: #2980b9; }
+        .btn-yesil { background: #27ae60; } .btn-yesil:hover { background: #2ecc71; }
+
         #sira-bilgi { position: absolute; top: 10px; left: 20px; font-size: 24px; color: #f1c40f; font-weight: bold; }
+        #toplam-puan { position: absolute; top: 40px; left: 20px; font-size: 18px; color: white; }
     </style>
 </head>
 <body>
 
     <div id="sira-bilgi">Sıra: Sen</div>
+    <div id="toplam-puan">Seçili Toplam: 0</div>
 
     <div class="masa-container">
-        <div class="oyuncu-kart" id="bot2-alan"><h3>Bot 2 (Karşı)</h3><p>Kalan: <span id="bot2-sayi">21</span></p></div>
-        <div class="oyuncu-kart" id="bot1-alan"><h3>Bot 1 (Sol)</h3><p>Kalan:<br><span id="bot1-sayi">21</span></p></div>
+        <div class="oyuncu-kart" id="bot2-alan"><h3>Bot 2</h3><p>Kalan: <span id="bot2-sayi">21</span></p></div>
+        <div class="oyuncu-kart" id="bot1-alan"><h3>Bot 1</h3><p>Kalan:<br><span id="bot1-sayi">21</span></p></div>
 
         <div class="orta-masa">
             <div class="cekme-ve-cop">
@@ -56,26 +66,29 @@
             <div class="yere-acilanlar" id="masadaki-seriler"></div>
         </div>
 
-        <div class="oyuncu-kart" id="bot3-alan"><h3>Bot 3 (Sağ)</h3><p>Kalan:<br><span id="bot3-sayi">21</span></p></div>
+        <div class="oyuncu-kart" id="bot3-alan"><h3>Bot 3</h3><p>Kalan:<br><span id="bot3-sayi">21</span></p></div>
 
         <div id="benim-alan">
+            <div class="buton-grubu">
+                <button class="btn-mavi" onclick="seriDiz()">Seri Diz</button>
+                <button class="btn-mavi" onclick="ciftDiz()">Çift Diz</button>
+                <button class="btn-yesil" onclick="secilileriAc()">Seçili Taşları Yere Aç (Kural: 101)</button>
+            </div>
             <div class="istaka-izgara" id="istaka-izgara"></div>
         </div>
     </div>
 
     <script>
         const renkler = ["sari", "mavi", "siyah", "kirmizi"];
-        let deste = [];
-        let bot1Tasi = [], bot2Tasi = [], bot3Tasi = [];
-        let atilanTaslar = [];
-        let siraKimde = 0; // 0: Sen
+        let deste = [], bot1Tasi = [], bot2Tasi = [], bot3Tasi = [], atilanTaslar = [];
+        let siraKimde = 0; 
         let tasCekildiMi = false;
+        let ilkAcilisYapildiMi = false; // 101 barajı geçildi mi kontrolü
 
-        // Istakadaki 34 boşluğu (slotu) temsil eden dizi (17 üst, 17 alt raf)
         let istakaSlots = new Array(34).fill(null);
+        let seciliSlotlar = []; // Tıklanarak seçilen taşların indeksleri
 
         function oyunuBaslat() {
-            // Taşları Üret ve Karıştır
             for (let i = 0; i < 2; i++) {
                 renkler.forEach(renk => {
                     for (let sayi = 1; sayi <= 13; sayi++) { deste.push({ renk, sayi }); }
@@ -84,47 +97,70 @@
             deste.push({ renk: "siyah", sayi: "★" }, { renk: "siyah", sayi: "★" });
             deste = deste.sort(() => Math.random() - 0.5);
 
-            // Oyuncuya 22 taşı ilk 22 slota yerleştir
             let oyuncuIlkTaslari = deste.splice(0, 22);
-            for(let i=0; i<22; i++) {
-                istakaSlots[i] = oyuncuIlkTaslari[i];
-            }
+            for(let i=0; i<22; i++) istakaSlots[i] = oyuncuIlkTaslari[i];
 
             bot1Tasi = deste.splice(0, 21);
             bot2Tasi = deste.splice(0, 21);
             bot3Tasi = deste.splice(0, 21);
 
-            istakayiCiz();
-            guncelle();
+            seriDiz(); // Başlangıçta otomatik seri dizsin
         }
 
+        // --- DİZİLİM FONKSİYONLARI ---
+        function seriDiz() {
+            seciliSlotlar = []; // Seçimleri sıfırla
+            let taslar = istakaSlots.filter(t => t !== null);
+            // Önce renge, sonra sayıya göre sırala (Seri mantığı)
+            taslar.sort((a, b) => {
+                if (a.renk === b.renk) return (a.sayi === '★' ? 0 : a.sayi) - (b.sayi === '★' ? 0 : b.sayi);
+                return a.renk.localeCompare(b.renk);
+            });
+            istakaSlots = new Array(34).fill(null);
+            taslar.forEach((t, i) => istakaSlots[i] = t);
+            istakayiCiz();
+        }
+
+        function ciftDiz() {
+            seciliSlotlar = [];
+            let taslar = istakaSlots.filter(t => t !== null);
+            // Önce sayıya, sonra renge göre sırala (Eşleri yan yana getirir)
+            taslar.sort((a, b) => {
+                let sayiA = a.sayi === '★' ? 0 : a.sayi;
+                let sayiB = b.sayi === '★' ? 0 : b.sayi;
+                if (sayiA === sayiB) return a.renk.localeCompare(b.renk);
+                return sayiA - sayiB;
+            });
+            istakaSlots = new Array(34).fill(null);
+            taslar.forEach((t, i) => istakaSlots[i] = t);
+            istakayiCiz();
+        }
+
+        // --- ISTAKA VE SEÇİM EKRANI ---
         function istakayiCiz() {
             const izgara = document.getElementById("istaka-izgara");
             izgara.innerHTML = "";
+            let anlikToplam = 0;
 
             for(let i=0; i<34; i++) {
                 let slot = document.createElement("div");
                 slot.className = "slot";
                 
-                // SLOT İÇİN SÜRÜKLE-BIRAK OLAYLARI (Kendi ıstakan içinde yer değiştirme)
+                // Drag & Drop
                 slot.addEventListener("dragover", (e) => { e.preventDefault(); slot.classList.add("drag-over"); });
                 slot.addEventListener("dragleave", () => slot.classList.remove("drag-over"));
                 slot.addEventListener("drop", (e) => {
                     e.preventDefault();
                     slot.classList.remove("drag-over");
-                    
                     let fromIndex = parseInt(e.dataTransfer.getData("slotIndex"));
-                    let toIndex = i;
-
-                    // Taşları yer değiştir (Swap)
-                    let temp = istakaSlots[toIndex];
-                    istakaSlots[toIndex] = istakaSlots[fromIndex];
-                    istakaSlots[fromIndex] = temp;
                     
-                    istakayiCiz(); // Ekranı yenile
+                    let temp = istakaSlots[i];
+                    istakaSlots[i] = istakaSlots[fromIndex];
+                    istakaSlots[fromIndex] = temp;
+                    seciliSlotlar = []; // Yer değişince seçimleri temizle
+                    istakayiCiz();
                 });
 
-                // Eğer slot doluysa taşı çiz
                 if(istakaSlots[i]) {
                     let tasObj = istakaSlots[i];
                     let tasDiv = document.createElement("div");
@@ -132,41 +168,83 @@
                     tasDiv.innerText = tasObj.sayi;
                     tasDiv.draggable = true;
 
-                    // Taşı tutmaya başladığımızda indeksini hafızaya al
-                    tasDiv.addEventListener("dragstart", (e) => {
-                        e.dataTransfer.setData("slotIndex", i);
-                    });
+                    // Seçim efekti
+                    if(seciliSlotlar.includes(i)) {
+                        tasDiv.classList.add("secili");
+                        anlikToplam += (tasObj.sayi === '★' ? 0 : tasObj.sayi);
+                    }
 
+                    // Tıklayarak seçme
+                    tasDiv.onclick = () => {
+                        if (seciliSlotlar.includes(i)) {
+                            seciliSlotlar = seciliSlotlar.filter(ind => ind !== i);
+                        } else {
+                            seciliSlotlar.push(i);
+                        }
+                        istakayiCiz();
+                    };
+
+                    tasDiv.addEventListener("dragstart", (e) => { e.dataTransfer.setData("slotIndex", i); });
                     slot.appendChild(tasDiv);
                 }
                 izgara.appendChild(slot);
             }
+            document.getElementById("toplam-puan").innerText = `Seçili Toplam: ${anlikToplam}`;
         }
 
-        // ÇÖP (TAŞ ATMA) ALANI İÇİN SÜRÜKLE-BIRAK
+        // --- 101 KURALI İLE YERE AÇMA ---
+        function secilileriAc() {
+            if (seciliSlotlar.length < 3) return alert("Per (grup) oluşturmak için en az 3 taş seçmelisiniz!");
+
+            let seciliTaslarObj = seciliSlotlar.map(i => istakaSlots[i]);
+            let toplamSayi = seciliTaslarObj.reduce((sum, tas) => sum + (tas.sayi === '★' ? 0 : tas.sayi), 0);
+
+            // 101 Kontrolü (Sadece ilk açılışta)
+            if (!ilkAcilisYapildiMi) {
+                if (toplamSayi < 101) {
+                    return alert(`Seçtiğiniz taşların toplamı ${toplamSayi}. Yere açabilmek için 101 barajını geçmelisiniz!`);
+                }
+                ilkAcilisYapildiMi = true; // Baraj geçildi, artık serbest!
+            }
+
+            // Seçilenleri masaya gönder
+            let masa = document.getElementById("masadaki-seriler");
+            let perGrubu = document.createElement("div");
+            perGrubu.className = "per-grubu";
+
+            seciliTaslarObj.forEach(tas => {
+                let div = document.createElement("div");
+                div.className = `tas ${tas.renk}`;
+                div.style.transform = "scale(0.8)";
+                div.style.margin = "-5px";
+                div.innerText = tas.sayi;
+                perGrubu.appendChild(div);
+            });
+            masa.appendChild(perGrubu);
+
+            // Istakadan sil
+            seciliSlotlar.forEach(i => istakaSlots[i] = null);
+            seciliSlotlar = [];
+            istakayiCiz();
+        }
+
+        // --- DİĞER OYUN MEKANİKLERİ ---
         const copDiv = document.getElementById("yandaki-cop");
         copDiv.addEventListener("dragover", (e) => { e.preventDefault(); copDiv.classList.add("drag-over"); });
         copDiv.addEventListener("dragleave", () => copDiv.classList.remove("drag-over"));
         copDiv.addEventListener("drop", (e) => {
             e.preventDefault();
             copDiv.classList.remove("drag-over");
-
-            if (siraKimde !== 0) return alert("Sıra sende değil!");
-            if (!tasCekildiMi) return alert("Önce ortadan taş çekmelisin!");
+            if (siraKimde !== 0 || !tasCekildiMi) return alert("Sıra sende değil veya henüz taş çekmedin!");
 
             let fromIndex = parseInt(e.dataTransfer.getData("slotIndex"));
+            atilanTaslar.push(istakaSlots[fromIndex]);
+            istakaSlots[fromIndex] = null;
             
-            // Taşı ıstakadan al ve çöpe at
-            let atilan = istakaSlots[fromIndex];
-            istakaSlots[fromIndex] = null; // Istakadaki yerini boşalt
-            atilanTaslar.push(atilan);
-            
+            seciliSlotlar = [];
             tasCekildiMi = false;
-            siraKimde = 1; // Sıra bota geçer
-            
-            istakayiCiz();
-            guncelle();
-            siraKontrol();
+            siraKimde = 1; 
+            istakayiCiz(); guncelle(); siraKontrol();
         });
 
         function guncelle() {
@@ -176,49 +254,30 @@
             document.getElementById("bot3-sayi").innerText = bot3Tasi.length;
 
             if (atilanTaslar.length > 0) {
-                let sonTas = atilanTaslar[atilanTaslar.length - 1];
-                copDiv.innerHTML = `<div class="tas ${sonTas.renk}" style="transform:scale(0.9); margin:0;">${sonTas.sayi}</div>`;
-                copDiv.style.border = "none";
-                copDiv.style.background = "transparent";
+                let sT = atilanTaslar[atilanTaslar.length - 1];
+                copDiv.innerHTML = `<div class="tas ${sT.renk}" style="transform:scale(0.9); margin:0;">${sT.sayi}</div>`;
+                copDiv.style.border = "none"; copDiv.style.background = "transparent";
             }
         }
 
         function tasCek() {
-            if (siraKimde !== 0) return alert("Sıra sende değil!");
-            if (tasCekildiMi) return alert("Zaten taş çektin, bir taşı ortaya (Çöpe) sürükle.");
-            
-            // Istakada ilk boş yeri (null) bul ve taşı oraya koy
-            let bosSlotIndex = istakaSlots.indexOf(null);
-            if(bosSlotIndex !== -1) {
-                istakaSlots[bosSlotIndex] = deste.pop();
-                tasCekildiMi = true;
-                istakayiCiz();
-                guncelle();
-            } else {
-                alert("Istakanda yer yok!");
-            }
+            if (siraKimde !== 0 || tasCekildiMi) return;
+            let bos = istakaSlots.indexOf(null);
+            if(bos !== -1) { istakaSlots[bos] = deste.pop(); tasCekildiMi = true; istakayiCiz(); guncelle(); }
         }
 
         function siraKontrol() {
             const isimler = ["Sen", "Bot 1", "Bot 2", "Bot 3"];
             document.getElementById("sira-bilgi").innerText = `Sıra: ${isimler[siraKimde]}`;
-
-            if (siraKimde !== 0) {
-                setTimeout(botOynasin, 1200);
-            }
+            if (siraKimde !== 0) setTimeout(botOynasin, 1000);
         }
 
         function botOynasin() {
-            let aktifBot = (siraKimde === 1) ? bot1Tasi : (siraKimde === 2) ? bot2Tasi : bot3Tasi;
-            aktifBot.push(deste.pop());
-            let atilan = aktifBot.splice(Math.floor(Math.random() * aktifBot.length), 1)[0];
-            atilanTaslar.push(atilan);
-            
-            siraKimde++;
-            if (siraKimde > 3) siraKimde = 0;
-            
-            guncelle();
-            siraKontrol();
+            let aktif = (siraKimde === 1) ? bot1Tasi : (siraKimde === 2) ? bot2Tasi : bot3Tasi;
+            aktif.push(deste.pop());
+            atilanTaslar.push(aktif.splice(Math.floor(Math.random() * aktif.length), 1)[0]);
+            siraKimde = (siraKimde + 1) % 4;
+            guncelle(); siraKontrol();
         }
 
         oyunuBaslat();
