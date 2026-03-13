@@ -2,20 +2,16 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>101 Okey Plus Klonu</title>
+    <title>101 Okey Plus - Onarılmış Sürüm</title>
     <style>
         /* GENEL AYARLAR VE ARKA PLAN */
         body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: radial-gradient(circle at center, #2a7a96, #114256); color: white; height: 100vh; display: flex; align-items: center; justify-content: center; user-select: none; overflow: hidden; }
-        
-        /* OYUN ALANI (Ekrana sığacak şekilde) */
         .oyun-alani { position: relative; width: 1200px; height: 700px; background: transparent; }
 
-        /* --- ORTA MASA (Yere Açılan Taşlar) --- */
+        /* --- ORTA MASA --- */
         .orta-masa { position: absolute; top: 100px; left: 200px; right: 200px; bottom: 180px; background-color: #12354e; border: 2px solid #235e82; border-radius: 8px; box-shadow: inset 0 0 50px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3); background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 30px 30px; display: flex; flex-direction: column; padding: 15px; overflow-y: auto; }
-        
         .orta-ust-panel { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         
-        /* DESTE VE GÖSTERGE ALANI */
         .deste-alani { display: flex; gap: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; }
         .deste-btn { background: #dcdde1; color: #2c3e50; padding: 15px 10px; border-radius: 5px; font-weight: bold; cursor: pointer; border: 2px solid #7f8c8d; text-align: center; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
         .deste-btn:active { transform: scale(0.95); }
@@ -24,7 +20,7 @@
         .acilan-perler { display: flex; flex-wrap: wrap; gap: 15px; align-content: flex-start; }
         .per-grubu { display: flex; gap: 1px; background: rgba(255,255,255,0.05); padding: 3px; border-radius: 5px; }
 
-        /* --- OYUNCU AVATARLARI VE BİLGİLERİ --- */
+        /* --- OYUNCU AVATARLARI --- */
         .oyuncu-kutu { position: absolute; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.4); border-radius: 5px; border: 1px solid rgba(255,255,255,0.2); width: 80px; }
         .avatar { width: 40px; height: 40px; background: #95a5a6; border-radius: 50%; margin-top: 5px; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .isim { font-size: 11px; padding: 5px; text-align: center; white-space: nowrap; }
@@ -40,114 +36,89 @@
         .cop-ust { top: 80px; left: 45%; }
         .cop-sag { top: 250px; right: 140px; }
         
-        /* SENİN ÇÖP KUTUN (Aynı zamanda Sürükle-Bırak atma yeri) */
-        .cop-sen { top: 500px; left: 220px; background: rgba(231, 76, 60, 0.2); border-color: #f1c40f; color: #f1c40f; z-index: 10; transition: 0.2s; }
+        .cop-sen { top: 500px; left: 220px; background: rgba(231, 76, 60, 0.2); border-color: #f1c40f; color: #f1c40f; z-index: 10; transition: 0.2s; cursor: pointer; }
         .cop-sen.drag-over { background: rgba(231, 76, 60, 0.8); transform: scale(1.1); }
 
-        /* --- ISTAKA ALANI VE YAN BUTONLAR --- */
+        /* --- ISTAKA VE BUTONLAR --- */
         .alt-alan { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: flex-end; gap: 10px; }
 
-        /* Dikey Butonlar (Görseldeki gibi) */
         .dikey-btn { width: 50px; height: 130px; background: linear-gradient(to bottom, #2b4560, #162638); border: 2px solid #487eb0; border-radius: 8px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.5); line-height: 1.2; padding-bottom: 5px; }
         .dikey-btn:hover { background: linear-gradient(to bottom, #3b5d80, #1e3650); }
-        .dikey-btn:active { transform: translateY(2px); }
-        
         .dikey-btn span { display: block; font-size: 12px; margin-top: 5px; font-weight: normal; color: #bdc3c7; }
         .dikey-btn.cift { border-color: #9b59b6; }
         .dikey-btn.seri { border-color: #3498db; }
 
-        /* Ahşap Istaka */
-        .istaka { background: linear-gradient(to bottom, #d69038, #9e5b15); padding: 10px; border-radius: 10px; border-bottom: 8px solid #5e3204; border-top: 2px solid #f3b25f; box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 20px 20px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 5px; }
-        
+        .istaka { background: linear-gradient(to bottom, #d69038, #9e5b15); padding: 10px; border-radius: 10px; border-bottom: 8px solid #5e3204; border-top: 2px solid #f3b25f; box-shadow: 0 10px 20px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 5px; }
         .istaka-raf { display: grid; grid-template-columns: repeat(20, 42px); gap: 2px; background: rgba(0,0,0,0.15); padding: 5px; border-radius: 5px; box-shadow: inset 0 4px 8px rgba(0,0,0,0.4); }
         .slot { width: 42px; height: 60px; background: rgba(0,0,0,0.2); border-radius: 5px; display: flex; align-items: center; justify-content: center; }
         .slot.drag-over { background: rgba(255,255,255,0.3); }
 
-        /* --- TAŞ TASARIMI (Birebir Renkler) --- */
+        /* --- TAŞ TASARIMI --- */
         .tas { width: 42px; height: 60px; background: linear-gradient(to bottom, #ffffff, #f0f0f0); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; box-shadow: 1px 2px 4px rgba(0,0,0,0.5); cursor: grab; border: 1px solid #bdc3c7; transition: transform 0.1s; position: relative; }
         .tas:active { cursor: grabbing; }
-        
-        /* Seçili taş havaya kalkar ve sarı çerçeve alır */
         .tas.secili { transform: translateY(-10px); border: 2px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; }
 
-        /* Renkler (Görseldeki tonlar) */
-        .siyah { color: #1e272e; }
-        .kirmizi { color: #c0392b; }
-        .mavi { color: #0984e3; }
-        .sari { color: #d4ac0d; } /* Okunabilmesi için altın sarısı */
-        
-        /* Okey Yıldızı / Hedef Sembolü simülasyonu */
+        .siyah { color: #1e272e; } .kirmizi { color: #c0392b; } .mavi { color: #0984e3; } .sari { color: #d4ac0d; }
         .tas.gercek-okey::after { content: "◎"; position: absolute; bottom: 2px; font-size: 10px; color: red; }
 
-        /* YERE AÇ BUTONU */
-        .btn-ac { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); background: #27ae60; border: 2px solid #2ecc71; color: white; padding: 10px 30px; border-radius: 20px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.4); }
-        .btn-ac:hover { background: #2ecc71; }
+        /* PUAN HESAPLAYICI VE AÇMA BUTONU */
+        .kontrol-paneli { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        
+        .puan-tablosu { background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 10px; border: 1px solid #f1c40f; text-align: center; }
+        .puan-baslik { font-size: 14px; color: #bdc3c7; margin-bottom: 5px; }
+        .puan-deger { font-size: 28px; font-weight: bold; color: #f1c40f; }
+        .puan-durum { font-size: 12px; color: #e74c3c; font-weight: bold; }
 
-        /* Bilgi Mesajı */
-        #sira-bilgi { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; font-weight: bold; color: #f1c40f; }
+        .btn-ac { background: #27ae60; border: 2px solid #2ecc71; color: white; padding: 10px 40px; border-radius: 20px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.4); transition: 0.2s; }
+        .btn-ac:hover { background: #2ecc71; transform: scale(1.05); }
+
+        #sira-bilgi { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 20px; font-weight: bold; color: #f1c40f; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <div class="oyun-alani">
         
-        <div id="sira-bilgi">Sıra: Sen (Puan: <span id="secili-puan">0</span>)</div>
+        <div id="sira-bilgi">Sıra: Sen</div>
 
-        <div class="oyuncu-kutu oyuncu-sol">
-            <div class="isim" style="writing-mode: vertical-rl; transform: rotate(180deg); margin-top:10px;">Cüneyt C.</div>
-            <div class="avatar">👤</div>
-        </div>
+        <div class="oyuncu-kutu oyuncu-sol"><div class="isim" style="writing-mode: vertical-rl; transform: rotate(180deg); margin-top:10px;">Cüneyt C.</div><div class="avatar">👤</div></div>
         <div class="cop-kutu cop-sol" id="cop-bot1">Boş</div>
 
-        <div class="oyuncu-kutu oyuncu-ust">
-            <div class="avatar">👤</div>
-            <div class="isim">M14366918</div>
-        </div>
+        <div class="oyuncu-kutu oyuncu-ust"><div class="avatar">👤</div><div class="isim">M14366918</div></div>
         <div class="cop-kutu cop-ust" id="cop-bot2">Boş</div>
 
-        <div class="oyuncu-kutu oyuncu-sag">
-            <div class="avatar">👤</div>
-            <div class="isim" style="writing-mode: vertical-rl;">M40463335</div>
-        </div>
+        <div class="oyuncu-kutu oyuncu-sag"><div class="avatar">👤</div><div class="isim" style="writing-mode: vertical-rl;">M40463335</div></div>
         <div class="cop-kutu cop-sag" id="cop-bot3">Boş</div>
 
         <div class="orta-masa">
             <div class="orta-ust-panel">
                 <div style="font-size: 40px; color: rgba(255,255,255,0.05); font-weight: 900; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none;">101 PLUS</div>
-                
                 <div class="deste-alani">
-                    <div class="gosterge">
-                        GÖSTERGE
-                        <div id="gosterge-tas" style="margin-top: 5px;"></div>
-                    </div>
-                    <div class="deste-btn" onclick="tasCek()">
-                        ÇEK<br><span id="deste-sayi" style="font-size:12px; font-weight:normal;">0</span>
-                    </div>
+                    <div class="gosterge">GÖSTERGE<div id="gosterge-tas" style="margin-top: 5px;"></div></div>
+                    <div class="deste-btn" onclick="tasCek()">ÇEK<br><span id="deste-sayi" style="font-size:12px; font-weight:normal;">0</span></div>
                 </div>
             </div>
-            
             <div class="acilan-perler" id="masadaki-seriler"></div>
         </div>
 
-        <button class="btn-ac" onclick="secilileriAc()">YERE AÇ (KURAL: 101)</button>
+        <div class="kontrol-paneli">
+            <div class="puan-tablosu">
+                <div class="puan-baslik">Seçili Taşların Toplamı</div>
+                <div class="puan-deger" id="canli-puan">0</div>
+                <div class="puan-durum" id="puan-durum-metni">(101 Açmak İçin 101 Puan Lazım)</div>
+            </div>
+            <button class="btn-ac" onclick="secilileriAc()">YERE AÇ</button>
+        </div>
 
-        <div class="cop-kutu cop-sen" id="cop-sen">ATILACAK<br>TAŞ</div>
+        <div class="cop-kutu cop-sen" id="cop-sen">SÜRÜKLE<br>VEYA<br>ÇİFT TIKLA</div>
 
         <div class="alt-alan">
-            
-            <div class="dikey-btn cift" onclick="ciftDiz()">
-                Ç<br>İ<br>F<br>T<br><span>DİZ</span>
-            </div>
-
+            <div class="dikey-btn cift" onclick="ciftDiz()">Ç<br>İ<br>F<br>T<br><span>DİZ</span></div>
             <div class="istaka">
                 <div class="istaka-raf" id="raf-ust"></div>
                 <div class="istaka-raf" id="raf-alt"></div>
             </div>
-
-            <div class="dikey-btn seri" onclick="seriDiz()">
-                S<br>E<br>R<br>İ<br><span>DİZ</span>
-            </div>
-
+            <div class="dikey-btn seri" onclick="seriDiz()">S<br>E<br>R<br>İ<br><span>DİZ</span></div>
         </div>
 
     </div>
@@ -159,22 +130,18 @@
         let siraKimde = 0, tasCekildiMi = false, ilkAcilis = false;
         let gercekOkey = null, gosterge = null;
 
-        // 40 Slot (20 üst, 20 alt)
         let istakaSlots = new Array(40).fill(null);
         let seciliSlotlar = [];
 
         function oyunuBaslat() {
             for (let i = 0; i < 2; i++) {
-                renkler.forEach(renk => {
-                    for (let sayi = 1; sayi <= 13; sayi++) deste.push({ renk, sayi, tip: 'normal' });
-                });
+                renkler.forEach(renk => { for (let sayi = 1; sayi <= 13; sayi++) deste.push({ renk, sayi, tip: 'normal' }); });
             }
             deste.push({ renk: "siyah", sayi: "★", tip: 'sahte' }, { renk: "kirmizi", sayi: "★", tip: 'sahte' });
             deste = deste.sort(() => Math.random() - 0.5);
 
             gosterge = deste.pop();
             gercekOkey = { renk: gosterge.renk, sayi: gosterge.sayi === 13 ? 1 : gosterge.sayi + 1 };
-            
             document.getElementById("gosterge-tas").appendChild(tasHTML(gosterge, true));
 
             let ilkTaslar = deste.splice(0, 22);
@@ -182,8 +149,7 @@
             
             bot1Tasi = deste.splice(0, 21); bot2Tasi = deste.splice(0, 21); bot3Tasi = deste.splice(0, 21);
             
-            seriDiz();
-            guncelle();
+            seriDiz(); guncelle();
         }
 
         function tasHTML(tasObj, isKucuk = false) {
@@ -228,11 +194,14 @@
                 let slot = document.createElement("div");
                 slot.className = "slot";
                 
+                // Raf içi sürükle bırak
                 slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("drag-over"); });
                 slot.addEventListener("dragleave", () => slot.classList.remove("drag-over"));
                 slot.addEventListener("drop", e => {
                     e.preventDefault(); slot.classList.remove("drag-over");
                     let fromIndex = parseInt(e.dataTransfer.getData("slotIndex"));
+                    if(isNaN(fromIndex)) return; // Çöpten vs çekilirse iptal
+                    
                     [istakaSlots[i], istakaSlots[fromIndex]] = [istakaSlots[fromIndex], istakaSlots[i]];
                     seciliSlotlar = []; istakayiCiz();
                 });
@@ -242,31 +211,64 @@
                     let tDiv = tasHTML(tObj);
                     tDiv.draggable = true;
 
+                    // Puan hesaplama
                     if(seciliSlotlar.includes(i)) {
                         tDiv.classList.add("secili");
                         anlikToplam += (tObj.sayi === '★' ? 0 : tObj.sayi);
                     }
 
+                    // Tıklama ile seçme
                     tDiv.onclick = () => {
                         seciliSlotlar = seciliSlotlar.includes(i) ? seciliSlotlar.filter(x => x !== i) : [...seciliSlotlar, i];
                         istakayiCiz();
                     };
+
+                    // ÇİFT TIKLAMA İLE ÇÖPE ATMA (YENİ ÖZELLİK)
+                    tDiv.ondblclick = () => {
+                        if(siraKimde !== 0 || !tasCekildiMi) return alert("Sıra sende değil veya taş çekmedin!");
+                        atilanlar.sen.push(istakaSlots[i]);
+                        istakaSlots[i] = null;
+                        seciliSlotlar = []; tasCekildiMi = false; siraKimde = 1;
+                        istakayiCiz(); guncelle(); siraKontrol();
+                    };
+
                     tDiv.addEventListener("dragstart", e => e.dataTransfer.setData("slotIndex", i));
                     slot.appendChild(tDiv);
                 }
                 (i < 20 ? rafUst : rafAlt).appendChild(slot);
             }
-            document.getElementById("secili-puan").innerText = anlikToplam;
+            
+            // Puan Tablosunu Güncelle
+            document.getElementById("canli-puan").innerText = anlikToplam;
+            let durumMetni = document.getElementById("puan-durum-metni");
+            
+            if (!ilkAcilis) {
+                if (anlikToplam >= 101) {
+                    durumMetni.innerText = "Süper! 101'i Geçtin, Yere Açabilirsin.";
+                    durumMetni.style.color = "#2ecc71";
+                } else {
+                    durumMetni.innerText = `(Eksik Puan: ${101 - anlikToplam})`;
+                    durumMetni.style.color = "#e74c3c";
+                }
+            } else {
+                durumMetni.innerText = "Barajı Geçtin, Serbest Açabilirsin.";
+                durumMetni.style.color = "#3498db";
+            }
         }
 
-        // TAŞ ATMA (SÜRÜKLE BIRAK)
+        // ÇÖPE SÜRÜKLEYEREK ATMA (Sağlamlaştırıldı)
         const copSen = document.getElementById("cop-sen");
         copSen.addEventListener("dragover", e => { e.preventDefault(); copSen.classList.add("drag-over"); });
         copSen.addEventListener("dragleave", () => copSen.classList.remove("drag-over"));
         copSen.addEventListener("drop", e => {
             e.preventDefault(); copSen.classList.remove("drag-over");
-            if(siraKimde !== 0 || !tasCekildiMi) return alert("Sıra sende değil veya taş çekmedin!");
+            
             let from = parseInt(e.dataTransfer.getData("slotIndex"));
+            if(isNaN(from)) return; 
+
+            if(siraKimde !== 0) return alert("Sıra sende değil!");
+            if(!tasCekildiMi) return alert("Önce ortadan taş çekmelisin!");
+            
             atilanlar.sen.push(istakaSlots[from]);
             istakaSlots[from] = null;
             seciliSlotlar = []; tasCekildiMi = false; siraKimde = 1;
@@ -278,7 +280,7 @@
             let seciliTaslarObj = seciliSlotlar.map(i => istakaSlots[i]);
             let toplam = seciliTaslarObj.reduce((s, t) => s + (t.sayi === '★' ? 0 : t.sayi), 0);
 
-            if (!ilkAcilis && toplam < 101) return alert(`Toplam ${toplam}. 101'i geçmelisiniz!`);
+            if (!ilkAcilis && toplam < 101) return alert(`Toplam puanın ${toplam}. 101 barajını geçmelisiniz!`);
             ilkAcilis = true;
 
             let masa = document.getElementById("masadaki-seriler");
@@ -291,9 +293,16 @@
         }
 
         function tasCek() {
-            if (siraKimde !== 0 || tasCekildiMi) return;
+            if (siraKimde !== 0) return alert("Sıra sende değil!");
+            if (tasCekildiMi) return alert("Zaten taş çektin, şimdi bir taş atmalısın.");
+            
             let bos = istakaSlots.indexOf(null);
-            if(bos !== -1) { istakaSlots[bos] = deste.pop(); tasCekildiMi = true; istakayiCiz(); guncelle(); }
+            if(bos !== -1) { 
+                istakaSlots[bos] = deste.pop(); 
+                tasCekildiMi = true; 
+                istakayiCiz(); 
+                guncelle(); 
+            }
         }
 
         function guncelle() {
@@ -305,13 +314,18 @@
                     let tasDiv = tasHTML(atilanlar[kim][atilanlar[kim].length-1], true);
                     el.appendChild(tasDiv);
                     el.style.border = "none";
-                } else if(kim === "sen") el.innerHTML = "ATILACAK<br>TAŞ";
+                } else if(kim === "sen") el.innerHTML = "SÜRÜKLE<br>VEYA<br>ÇİFT TIKLA";
             });
         }
 
         function siraKontrol() {
             let isimler = ["Sen", "Cüneyt C.", "M14366918", "M40463335"];
-            document.getElementById("sira-bilgi").innerHTML = `Sıra: ${isimler[siraKimde]} (Puan: <span id="secili-puan">0</span>)`;
+            let bilgi = document.getElementById("sira-bilgi");
+            bilgi.innerText = `Sıra: ${isimler[siraKimde]}`;
+            
+            // Sıra sendeyse yeşil, değilse sarı yanar
+            bilgi.style.color = (siraKimde === 0) ? "#2ecc71" : "#f1c40f";
+
             if(siraKimde !== 0) setTimeout(botOynasin, 1000);
         }
 
