@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>101 Okey Plus - Onarılmış Sürüm</title>
+    <title>101 Okey Plus - Son Sürüm</title>
     <style>
         /* GENEL AYARLAR VE ARKA PLAN */
         body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: radial-gradient(circle at center, #2a7a96, #114256); color: white; height: 100vh; display: flex; align-items: center; justify-content: center; user-select: none; overflow: hidden; }
@@ -62,7 +62,8 @@
         .tas.gercek-okey::after { content: "◎"; position: absolute; bottom: 2px; font-size: 10px; color: red; }
 
         /* PUAN HESAPLAYICI VE AÇMA BUTONU */
-        .kontrol-paneli { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        /* Z-INDEX eklendi */
+        .kontrol-paneli { position: absolute; bottom: 160px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 5; }
         
         .puan-tablosu { background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 10px; border: 1px solid #f1c40f; text-align: center; }
         .puan-baslik { font-size: 14px; color: #bdc3c7; margin-bottom: 5px; }
@@ -163,24 +164,59 @@
             return div;
         }
 
+        /* SERİ DİZ - Boşluklar eklendi */
         function seriDiz() {
             seciliSlotlar = [];
-            let taslar = istakaSlots.filter(t => t !== null);
-            taslar.sort((a, b) => (a.renk === b.renk ? (a.sayi === '★'?0:a.sayi) - (b.sayi === '★'?0:b.sayi) : a.renk.localeCompare(b.renk)));
-            istakaSlots = new Array(40).fill(null);
-            taslar.forEach((t, i) => istakaSlots[i] = t);
+            let tiles = istakaSlots.filter(t => t !== null);
+            // Sort by color, then number
+            tiles.sort((a, b) => {
+                if (a.renk === b.renk) return (a.sayi === '★' ? 0 : a.sayi) - (b.sayi === '★' ? 0 : b.sayi);
+                return a.renk.localeCompare(b.renk);
+            });
+            
+            // Arrange with spaces
+            let arrangedSlots = new Array(40).fill(null);
+            let index = 0;
+            for (let i = 0; i < tiles.length; i++) {
+                let tile = tiles[i];
+                let nextTile = tiles[i+1];
+                arrangedSlots[index] = tile;
+                index++;
+                
+                // Boşluk koyma şartı: sonraki taş farklı renk veya ardışık sayı değil
+                if (nextTile && (tile.renk !== nextTile.renk || tile.sayi + 1 !== nextTile.sayi)) {
+                    if (index < 40) index++; // Boş slot koy
+                }
+            }
+            istakaSlots = arrangedSlots;
             istakayiCiz();
         }
 
+        /* ÇİFT DİZ - Boşluklar eklendi */
         function ciftDiz() {
             seciliSlotlar = [];
-            let taslar = istakaSlots.filter(t => t !== null);
-            taslar.sort((a, b) => {
-                let diff = (a.sayi === '★'?0:a.sayi) - (b.sayi === '★'?0:b.sayi);
+            let tiles = istakaSlots.filter(t => t !== null);
+            // Sort by number, then color
+            tiles.sort((a, b) => {
+                let diff = (a.sayi === '★' ? 0 : a.sayi) - (b.sayi === '★' ? 0 : b.sayi);
                 return diff === 0 ? a.renk.localeCompare(b.renk) : diff;
             });
-            istakaSlots = new Array(40).fill(null);
-            taslar.forEach((t, i) => istakaSlots[i] = t);
+            
+            // Arrange with spaces
+            let arrangedSlots = new Array(40).fill(null);
+            let index = 0;
+            for (let i = 0; i < tiles.length; i++) {
+                let tile = tiles[i];
+                let nextTile = tiles[i+1];
+                arrangedSlots[index] = tile;
+                index++;
+                
+                // Boşluk koyma şartı: sonraki taş farklı sayı
+                if (nextTile && tile.sayi !== nextTile.sayi) {
+                    if (index < 40) index++; // Boş slot koy
+                }
+            }
+            istakaSlots = arrangedSlots;
             istakayiCiz();
         }
 
@@ -223,7 +259,7 @@
                         istakayiCiz();
                     };
 
-                    // ÇİFT TIKLAMA İLE ÇÖPE ATMA (YENİ ÖZELLİK)
+                    // ÇİFT TIKLAMA İLE ÇÖPE ATMA
                     tDiv.ondblclick = () => {
                         if(siraKimde !== 0 || !tasCekildiMi) return alert("Sıra sende değil veya taş çekmedin!");
                         atilanlar.sen.push(istakaSlots[i]);
